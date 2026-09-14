@@ -1,8 +1,11 @@
 export interface FreelancerProfile {
   name: string;
+  tagline: string;
   email: string;
   phone: string;
   portfolio: string;
+  /** Handle/usuario corto para el pie de página del PDF (ej. de GitHub). */
+  handle: string;
 }
 
 /**
@@ -12,7 +15,9 @@ export interface FreelancerProfile {
  */
 export const freelancerProfile: FreelancerProfile = {
   name: "Profesional de ejemplo",
+  tagline: "Desarrollo de software freelance",
   email: "contacto@example.invalid",
   phone: "809-000-0000",
   portfolio: "portafolio.example.invalid",
+  handle: "tuusuario",
 };

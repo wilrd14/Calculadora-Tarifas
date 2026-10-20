@@ -93,7 +93,7 @@ cubre qué tiene la app hoy y cómo usarla/desarrollarla.
 
 Si solo quieres **usar** la app (no desarrollarla), descarga el
 instalador más reciente desde la sección
-[Releases](https://github.com/willrd14/Calculadora-Tarifas/releases) de
+[Releases](https://github.com/wilrd14/Calculadora-Tarifas/releases) de
 este repositorio y corre el `.exe` (NSIS) o el `.msi`. Queda instalada
 como cualquier programa de Windows, con su ícono en el menú de inicio y
 su desinstalador — no hace falta terminal ni Node/Rust para usarla.

@@ -137,4 +137,4 @@ Calculadora-Tarifas/
   src-tauri/            backend Rust: comandos, plugins, migraciones SQL
   Template/             diseño de referencia del PDF (no se importa en código)
 ```
-Proyecto personal de [Williams Villavizar](https://portafolio.w-tech.uk).
+Proyecto personal de [Williams Villavizar](https://wilrd14.dev).

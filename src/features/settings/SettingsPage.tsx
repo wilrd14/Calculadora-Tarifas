@@ -293,7 +293,7 @@ export function SettingsPage() {
             <input
               id="freelancerTagline"
               className={inputClassName}
-              placeholder="Ej. Desarrollo de software freelance"
+              placeholder="Ej. Desarrollo web a medida"
               {...register("freelancerTagline")}
             />
           </FormField>

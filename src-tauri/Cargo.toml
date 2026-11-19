@@ -1,6 +1,6 @@
 [package]
 name = "calculadora-tarifas"
-version = "1.1.0"
+version = "1.1.1"
 description = "Calculadora de tarifas para cotizaciones freelance"
 authors = ["Williams"]
 edition = "2021"

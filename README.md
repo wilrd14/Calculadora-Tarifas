@@ -10,6 +10,20 @@ Construida con [Tauri](https://tauri.app), React y TypeScript. El plan
 funcional original está en [`docs/PRD.md`](docs/PRD.md); este README
 cubre qué tiene la app hoy y cómo usarla/desarrollarla.
 
+## Inicio rápido en Windows
+
+1. Descarga el instalador desde [Releases](https://github.com/wilrd14/Calculadora-Tarifas/releases) ejecuta el archivo `.exe` o `.msi` disponible y abre **Calculadora de Tarifas** desde el menú Inicio.
+2. En **Configuración**, guarda tu tarifa por hora, la moneda habitual y la tasa USD/DOP. Puedes añadir tus datos profesionales para que aparezcan en el PDF.
+3. Abre **Nueva cotización**, indica el cliente y el proyecto, y ajusta las funcionalidades, horas y condiciones. El total se actualiza mientras editas.
+4. Pulsa **Vista previa PDF**, revisa el documento y guárdalo. Puedes abrirlo desde **Historial** o en `Documentos/Cotizaciones`.
+5. Para seguir editando más tarde, abre **Historial → Borradores**. Para actualizar una cotización emitida, usa **Crear revisión** desde el registro original.
+
+## Capturas
+
+![Formulario de nueva cotización y desglose del total](docs/capturas/nueva-cotizacion.jpg)
+
+![Ajustes de tarifa, moneda y tasa de cambio](docs/capturas/configuracion.jpg)
+
 ## ✨ Funciones
 
 ### Cotizar
@@ -101,18 +115,12 @@ que la cotización use la misma moneda en la que se guardaron.
 
 ### Respaldo y restauración
 
-En **Configuración → Respaldo y restauración**, usa **Crear respaldo**
-para guardar una copia portable en `Documentos/Cotizaciones`. El
-archivo `.tarifas.json` contiene clientes, configuración, tema,
-borradores, plantillas, historial, revisiones y los PDF del historial
-disponibles en esa carpeta. El límite por archivo es de 64 MB.
+1. Abre **Configuración → Respaldo y restauración** y pulsa **Crear respaldo**.
+2. Copia el archivo `.tarifas.json` de `Documentos/Cotizaciones` a una ubicación segura. Contiene clientes, configuración, tema, borradores, plantillas, historial, revisiones y los PDF del historial disponibles en esa carpeta. El límite por archivo es de 64 MB.
+3. En la instalación de destino, abre la misma sección y selecciona el archivo. Revisa el resumen y confirma si quieres reemplazar los registros locales.
+4. Comprueba en **Historial** que aparezcan tus cotizaciones y que puedas abrir los PDF restaurados. La app guarda automáticamente un respaldo de los datos anteriores y escribe los PDF recuperados con nombres propios en la carpeta de destino.
 
-Para recuperar los datos en otra instalación, selecciona el archivo.
-La app muestra el contenido antes de pedir confirmación. Al restaurar,
-guarda un respaldo previo, reemplaza los registros locales y escribe los
-PDF recuperados con nombres propios en la carpeta de destino. Los PDF que
-ya estaban en la carpeta conservan sus archivos. La clave de Divisa.do
-se configura en Windows y no forma parte del respaldo.
+Si usas una clave de Divisa.do, configúrala también en el equipo de destino mediante la variable de entorno `DIVISA_API_KEY`.
 
 ### Activar la tasa automática
 
@@ -137,22 +145,13 @@ se configura en Windows y no forma parte del respaldo.
 | PDF | `@react-pdf/renderer` |
 | Persistencia | SQLite vía `tauri-plugin-sql` |
 
-## 📦 Instalación (uso normal)
-
-Si solo quieres **usar** la app (no desarrollarla), descarga el
-instalador más reciente desde la sección
-[Releases](https://github.com/wilrd14/Calculadora-Tarifas/releases) de
-este repositorio y corre el `.exe` (NSIS) o el `.msi`. Queda instalada
-como cualquier programa de Windows, con su ícono en el menú de inicio y
-su desinstalador — no hace falta terminal ni Node/Rust para usarla.
-
 ## 💻 Desarrollo
 
 Requiere [Node.js](https://nodejs.org) y el
 [toolchain de Rust](https://tauri.app/start/prerequisites/) instalados.
 
 ```bash
-npm install
+npm ci
 npm run tauri dev     # levanta la app en modo desarrollo (hot reload)
 ```
 

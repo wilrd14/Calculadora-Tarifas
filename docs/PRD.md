@@ -139,13 +139,25 @@ Calculadora-Tarifas/
   para nuevas.
 
 
-## Pendientes para la próxima sesión
+## Estado de la validación en Windows
 
-- Probar el flujo completo en una instalación limpia de Windows y en una
-  actualización con datos existentes. Incluir borradores, plantillas,
-  revisiones, tasas USD/DOP, exportación de PDF y respaldo restaurado en un
-  perfil aislado.
-- Mejorar el README del repositorio con una guía de inicio, capturas actuales,
-  instrucciones de configuración y pasos claros para respaldo y restauración.
-- Empaquetar y verificar el instalador de Windows después de completar la
-  prueba integral.
+- El README incluye la guía de inicio, capturas de la interfaz y los pasos
+  para configurar la tasa de cambio, crear un respaldo y restaurarlo.
+- Se validaron los scripts de migración de SQLite en una base vacía y en
+  una base de prueba con datos del esquema anterior. La prueba de Rust
+  comprobó la restauración del respaldo y la reversión ante errores.
+- En el navegador, con datos de prueba y almacenamiento simulado, se
+  comprobó la conversión manual USD/DOP y se generó un PDF desde el
+  formulario.
+
+- Se generó el instalador NSIS para Windows x64 y se comprobó el formato
+  del archivo ejecutable.
+
+### Pendiente
+
+- Ejecutar la prueba integral en un perfil aislado de Windows. En una
+  instalación limpia, guardar y retomar un borrador, reutilizar una
+  plantilla, generar un PDF, crear una revisión y comprobar la tasa
+  automática. En una actualización desde la versión anterior, verificar
+  los datos conservados y restaurar el respaldo en otro perfil aislado.
+- Verificar el instalador de Windows en ese entorno.

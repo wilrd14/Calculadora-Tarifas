@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { ChangeEvent } from "react";
 import type { FieldArrayWithId } from "react-hook-form";
 import { useFormContext } from "react-hook-form";
@@ -24,6 +25,7 @@ interface QuoteItemsFieldProps {
 
 /** Lista dinámica de funcionalidades/módulos de la cotización, con horas por complejidad. */
 export function QuoteItemsField({ fields, append, remove }: QuoteItemsFieldProps) {
+  const id = useId();
   const {
     register,
     setValue,
@@ -36,13 +38,13 @@ export function QuoteItemsField({ fields, append, remove }: QuoteItemsFieldProps
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <SectionHeading>Funcionalidades / módulos</SectionHeading>
+        <SectionHeading>Alcance y horas</SectionHeading>
         <button
           type="button"
           onClick={() => append(emptyQuoteItem)}
-          className="rounded-full border border-border px-3 py-1 text-xs font-medium text-text hover:border-accent hover:text-accent"
+          className="secondary-action"
         >
-          + Agregar
+          + Agregar funcionalidad
         </button>
       </div>
 
@@ -58,24 +60,24 @@ export function QuoteItemsField({ fields, append, remove }: QuoteItemsFieldProps
           return (
             <div
               key={field.id}
-              className="grid grid-cols-1 gap-2 rounded border border-border bg-well p-4 sm:grid-cols-[1fr_auto_auto_auto] sm:items-start"
+              className="quote-item-row"
             >
               <FormField
                 label="Nombre"
-                htmlFor={`items.${index}.name`}
+                htmlFor={`${id}-items.${index}.name`}
                 error={errors.items?.[index]?.name?.message}
               >
                 <input
-                  id={`items.${index}.name`}
+                  id={`${id}-items.${index}.name`}
                   className={inputClassName}
                   placeholder="Ej. Login de usuarios"
                   {...register(`items.${index}.name`)}
                 />
               </FormField>
 
-              <FormField label="Complejidad" htmlFor={`items.${index}.complexity`}>
+              <FormField label="Complejidad" htmlFor={`${id}-items.${index}.complexity`}>
                 <select
-                  id={`items.${index}.complexity`}
+                  id={`${id}-items.${index}.complexity`}
                   className={inputClassName}
                   {...register(`items.${index}.complexity`, {
                     onChange: handleComplexityChange,
@@ -91,15 +93,15 @@ export function QuoteItemsField({ fields, append, remove }: QuoteItemsFieldProps
 
               <FormField
                 label="Horas"
-                htmlFor={`items.${index}.hours`}
+                htmlFor={`${id}-items.${index}.hours`}
                 error={errors.items?.[index]?.hours?.message}
               >
                 <input
-                  id={`items.${index}.hours`}
+                  id={`${id}-items.${index}.hours`}
                   type="number"
                   step="0.25"
                   min="0"
-                  className={`${inputClassName} font-mono`}
+                  className={inputClassName}
                   {...register(`items.${index}.hours`)}
                 />
               </FormField>
@@ -108,7 +110,7 @@ export function QuoteItemsField({ fields, append, remove }: QuoteItemsFieldProps
                 type="button"
                 onClick={() => remove(index)}
                 disabled={fields.length === 1}
-                className="text-sm text-danger hover:opacity-75 disabled:cursor-not-allowed disabled:text-text-faint sm:mt-6"
+                className="text-sm text-danger hover:opacity-75 disabled:cursor-not-allowed disabled:text-text-faint row-remove"
               >
                 Quitar
               </button>

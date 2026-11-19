@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
+import { cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 
 export const inputClassName =
-  "w-full rounded border border-border bg-well px-3 py-2 text-sm text-text placeholder:text-text-faint focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent";
+  "w-full min-w-0 rounded-md border border-control bg-surface px-3 py-2 text-sm text-text placeholder:text-text-faint focus:border-accent focus:ring-1 focus:ring-accent";
 
 interface FormFieldProps {
   label: string;
@@ -11,34 +11,26 @@ interface FormFieldProps {
   className?: string;
 }
 
-/** Envuelve un input con su label y mensaje de error, con el estilo estándar del formulario. */
-export function FormField({
-  label,
-  htmlFor,
-  error,
-  children,
-  className,
-}: FormFieldProps) {
+export function FormField({ label, htmlFor, error, children, className }: FormFieldProps) {
+  const errorId = `${htmlFor}-error`;
+  const control = error && isValidElement(children)
+    ? cloneElement(children as ReactElement<{ "aria-invalid"?: boolean; "aria-describedby"?: string }>, {
+        "aria-invalid": true,
+        "aria-describedby": errorId,
+      })
+    : children;
+
   return (
     <div className={className}>
-      <label
-        htmlFor={htmlFor}
-        className="mb-1 block text-sm text-text-soft"
-      >
+      <label htmlFor={htmlFor} className="mb-1 block text-sm font-medium text-text">
         {label}
       </label>
-      {children}
-      {error && <p className="mt-1 text-sm text-danger">{error}</p>}
+      {control}
+      {error && <p id={errorId} className="mt-1 text-sm text-danger">{error}</p>}
     </div>
   );
 }
 
-/** Etiqueta de sección — prefijo `//` como un comentario de código. */
 export function SectionHeading({ children }: { children: ReactNode }) {
-  return (
-    <h2 className="text-xs text-text-faint">
-      <span className="text-accent">// </span>
-      {children}
-    </h2>
-  );
+  return <h2 className="text-base font-semibold text-text">{children}</h2>;
 }

@@ -137,3 +137,15 @@ Calculadora-Tarifas/
   sin edición manual adicional.
 - El historial permite reabrir y reutilizar cotizaciones pasadas como base
   para nuevas.
+
+
+## Pendientes para la próxima sesión
+
+- Probar el flujo completo en una instalación limpia de Windows y en una
+  actualización con datos existentes. Incluir borradores, plantillas,
+  revisiones, tasas USD/DOP, exportación de PDF y respaldo restaurado en un
+  perfil aislado.
+- Mejorar el README del repositorio con una guía de inicio, capturas actuales,
+  instrucciones de configuración y pasos claros para respaldo y restauración.
+- Empaquetar y verificar el instalador de Windows después de completar la
+  prueba integral.

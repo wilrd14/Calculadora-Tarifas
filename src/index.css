@@ -1,37 +1,245 @@
 @import "tailwindcss";
-
-/* Tipografía propia de la app — deliberadamente distinta de la del PDF
-   (Space Grotesk/IBM Plex Sans/Roboto Mono, ver features/pdf/fonts.ts).
-   La app es la herramienta de trabajo de un desarrollador: JetBrains Mono
-   en todo el UI, referencia directa a un editor/terminal. */
-@import "@fontsource/jetbrains-mono/latin-400.css";
-@import "@fontsource/jetbrains-mono/latin-500.css";
-@import "@fontsource/jetbrains-mono/latin-600.css";
-@import "@fontsource/jetbrains-mono/latin-700.css";
+@import "@fontsource/ibm-plex-sans/latin-400.css";
+@import "@fontsource/ibm-plex-sans/latin-500.css";
+@import "@fontsource/ibm-plex-sans/latin-600.css";
+@import "@fontsource/ibm-plex-sans/latin-700.css";
 
 @theme {
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --font-sans: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --color-bg: #edf3f4;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f4f7f8;
+  --color-well: #f8fafb;
+  --color-border: #dce5e7;
+  --color-control: #a1b2b7;
+  --color-text: #172528;
+  --color-text-soft: #465b60;
+  --color-text-faint: #596b70;
+  --color-accent: #1b6c80;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: #e5f2f4;
+  --color-success: #206a49;
+  --color-danger: #ae2839;
+}
 
-  /* "Calculadora de terminal": pantalla oscura, ámbar como el dígito de
-     una calculadora o un monitor de fósforo — nada que ver con el papel
-     cálido del PDF. */
-  --color-bg: #10131a;
-  --color-surface: #171b24;
-  --color-surface-raised: #1d222d;
-  --color-well: #0a0c11;
-  --color-border: #262c3a;
-  --color-text: #e7e5df;
-  --color-text-soft: #9096a8;
-  --color-text-faint: #565d70;
-  --color-accent: #f0a83c;
-  --color-accent-ink: #1a1206;
-  --color-accent-soft: #2c2413;
-  --color-success: #7cbf7c;
-  --color-danger: #e2705a;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #131718;
+  --color-surface: #1b2021;
+  --color-surface-raised: #242a2b;
+  --color-well: #202627;
+  --color-border: #384344;
+  --color-control: #657476;
+  --color-text: #edf3f3;
+  --color-text-soft: #becaca;
+  --color-text-faint: #a6b5b5;
+  --color-accent: #83d0db;
+  --color-accent-ink: #142326;
+  --color-accent-soft: #293f42;
+  --color-success: #8ad4aa;
+  --color-danger: #ff9ba6;
 }
 
 body {
-  background-color: var(--color-bg);
+  min-width: 320px;
+  margin: 0;
+  background: var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
+  font-size: 14px;
 }
+
+button:not(:disabled), summary { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: var(--color-accent-soft); color: var(--color-text); }
+input, textarea { caret-color: var(--color-accent); }
+input[type="number"], .amount { font-variant-numeric: tabular-nums; }
+
+.app-shell {
+  margin-inline: auto;
+  min-height: 100vh;
+  max-width: 1640px;
+  padding: 0 8px 8px;
+}
+
+.app-brand {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 12px;
+  font-weight: 600;
+}
+
+.app-brand svg { color: var(--color-accent); flex: none; }
+
+.app-nav {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-inline: 12px;
+}
+
+.app-nav button {
+  flex: none;
+  min-height: 40px;
+  padding: 0 2px;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-soft);
+  text-align: left;
+}
+
+.app-nav button:hover { color: var(--color-accent); }
+.app-nav button[aria-current] {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.app-sheet {
+  min-width: 0;
+  min-height: calc(100vh - 96px);
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+
+.page-title {
+  margin: 0 0 24px;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.quote-layout { display: grid; gap: 28px; align-items: start; }
+.quote-editor { min-width: 0; display: grid; gap: 24px; padding-bottom: 88px; }
+.quote-group { display: grid; min-width: 0; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--color-border); }
+.quote-group:last-child { padding-bottom: 0; border-bottom: 0; }
+.quote-summary {
+  position: fixed;
+  z-index: 10;
+  inset: auto 0 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.summary-breakdown { display: none; }
+.summary-breakdown[data-expanded="true"] {
+  display: block;
+  max-height: min(50vh, 420px);
+  overflow-y: auto;
+}
+.summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.summary-price { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.summary-price strong { color: var(--color-accent); font-size: 22px; font-weight: 600; line-height: 1.15; }
+.summary-output { margin-top: 6px; max-height: 4em; overflow-y: auto; overflow-wrap: anywhere; }
+.primary-action, .secondary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.primary-action { background: var(--color-text); color: var(--color-surface); }
+.primary-action:hover { background: var(--color-accent); color: var(--color-accent-ink); }
+.primary-action:disabled { opacity: .65; }
+.secondary-action { border-color: var(--color-control); background: var(--color-surface); }
+.secondary-action:hover { background: var(--color-accent-soft); }
+.draft-switch { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px; }
+.draft-switch select { min-width: 0; max-width: 100%; border: 1px solid var(--color-control); border-radius: 6px; padding: 6px 8px; }
+
+@media (min-width: 760px) {
+  .app-shell {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: 48px minmax(0, 1fr);
+    padding-left: 0;
+  }
+  .app-brand { grid-column: 1 / -1; padding-inline: 20px; }
+  .app-nav { grid-column: 1 / -1; grid-row: 2; align-self: start; padding-inline: 24px; }
+  .app-sheet { grid-column: 1 / -1; grid-row: 2; margin: 40px 0 0 8px; }
+  .summary-actions, .summary-breakdown, .summary-output { max-width: 720px; margin-inline: auto; }
+}
+
+@media (min-width: 1060px) {
+  .app-shell { grid-template-columns: 192px minmax(0, 1fr); }
+  .app-nav { grid-column: 1; flex-direction: column; gap: 2px; padding: 8px 12px; }
+  .app-nav button { padding-inline: 8px; }
+  .app-sheet { grid-column: 2; margin: 0; min-height: calc(100vh - 56px); }
+  .quote-layout { grid-template-columns: minmax(0, 1fr) minmax(250px, 295px); }
+  .quote-editor { padding-bottom: 0; }
+  .quote-summary {
+    position: sticky;
+    top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: auto;
+    padding: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-well);
+  }
+  .summary-breakdown { display: block; }
+  .summary-breakdown[data-expanded="true"] { max-height: none; }
+  .summary-toggle { display: none; }
+  .summary-actions { display: contents; }
+  .summary-price { order: -1; }
+  .summary-output:empty { display: none; }
+  .summary-price strong { font-size: 28px; }
+}
+
+@media (max-width: 540px) {
+  .app-sheet { padding: 16px; }
+  .app-nav { gap: 11px; padding-inline: 6px; font-size: 13px; }
+  .summary-price strong { font-size: 20px; }
+  .summary-actions button { min-height: 42px; }
+}
+.quote-item-row, .quote-charge-row {
+  display: grid;
+  min-width: 0;
+  gap: 8px 12px;
+  align-items: start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.row-remove { justify-self: start; min-height: 32px; }
+@media (min-width: 630px) {
+  .quote-item-row { grid-template-columns: minmax(0, 1fr) 148px 85px auto; }
+  .quote-charge-row { grid-template-columns: minmax(0, 1fr) 120px auto; }
+  .row-remove { margin-top: 23px; }
+}
+@media (max-width: 460px) {
+  .summary-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .summary-price { grid-column: 1 / -1; }
+  .quote-editor { padding-bottom: 144px; }
+}
+
+.pdf-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(960px, calc(100vw - 24px));
+  height: calc(100vh - 24px);
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.pdf-dialog[open] { display: flex; flex-direction: column; }
+.pdf-dialog::backdrop { background: rgb(14 23 24 / 65%); }
+.pdf-dialog-document { flex: 1; min-height: 0; width: 100%; background: var(--color-well); }

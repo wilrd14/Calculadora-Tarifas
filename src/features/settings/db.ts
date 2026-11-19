@@ -1,6 +1,16 @@
+import { invoke } from "@tauri-apps/api/core";
 import { getDb } from "../../lib/db";
 import type { Currency } from "../../lib/currency";
+import {
+  automaticRateSnapshot,
+  parseExchangeRateCache,
+  parseReferenceSeries,
+  type ExchangeRateCache,
+  type ExchangeRateSnapshot,
+} from "../../lib/exchangeRate";
 import type { SettingsFormValues } from "./schema";
+
+export type { ExchangeRateSnapshot } from "../../lib/exchangeRate";
 
 /** Fila fija (siempre "default") de la tabla `settings` — un solo usuario, sin cuentas. */
 const SETTINGS_ROW_ID = "default";
@@ -14,12 +24,15 @@ export interface FreelancerProfile {
   handle: string;
 }
 
-export type AppSettings = SettingsFormValues;
+export type AppSettings = SettingsFormValues & { exchangeRateCache: ExchangeRateCache | null };
 
 interface RawSettingsRow {
   hourly_rate: number;
   currency: string;
   exchange_rate_dop_per_usd: number;
+  exchange_rate_mode: string;
+  exchange_rate_side: string;
+  exchange_rate_cache_json: string | null;
   freelancer_name: string;
   freelancer_tagline: string;
   freelancer_email: string;
@@ -43,6 +56,9 @@ export async function getSettings(): Promise<AppSettings> {
     hourlyRate: row.hourly_rate,
     currency: row.currency as Currency,
     exchangeRateDopPerUsd: row.exchange_rate_dop_per_usd,
+    exchangeRateMode: row.exchange_rate_mode === "automatic" ? "automatic" : "manual",
+    exchangeRateSide: row.exchange_rate_side === "sell" ? "sell" : "buy",
+    exchangeRateCache: parseExchangeRateCache(row.exchange_rate_cache_json),
     freelancerName: row.freelancer_name,
     freelancerTagline: row.freelancer_tagline,
     freelancerEmail: row.freelancer_email,
@@ -53,7 +69,7 @@ export async function getSettings(): Promise<AppSettings> {
 }
 
 /** Guarda la configuración editada desde la pantalla de Configuración. */
-export async function saveSettings(settings: AppSettings): Promise<void> {
+export async function saveSettings(settings: SettingsFormValues): Promise<void> {
   const db = await getDb();
   await db.execute(
     `UPDATE settings SET
@@ -65,8 +81,10 @@ export async function saveSettings(settings: AppSettings): Promise<void> {
       freelancer_email = $6,
       freelancer_phone = $7,
       freelancer_portfolio = $8,
-      freelancer_handle = $9
-    WHERE id = $10`,
+      freelancer_handle = $9,
+      exchange_rate_mode = $10,
+      exchange_rate_side = $11
+    WHERE id = $12`,
     [
       settings.hourlyRate,
       settings.currency,
@@ -77,14 +95,68 @@ export async function saveSettings(settings: AppSettings): Promise<void> {
       settings.freelancerPhone,
       settings.freelancerPortfolio,
       settings.freelancerHandle,
+      settings.exchangeRateMode,
+      settings.exchangeRateSide,
       SETTINGS_ROW_ID,
     ],
   );
 }
 
+export function getEffectiveExchangeRate(settings: AppSettings): ExchangeRateSnapshot {
+  if (settings.exchangeRateMode === "automatic") {
+    const snapshot = automaticRateSnapshot(settings.exchangeRateCache, settings.exchangeRateSide);
+    if (snapshot) return snapshot;
+  }
+  return {
+    rate: settings.exchangeRateDopPerUsd,
+    source: "Manual",
+    effectiveDate: null,
+    side: null,
+    variationPercent: null,
+  };
+}
+
+let rateRefresh: Promise<ExchangeRateCache> | null = null;
+
+async function updateExchangeRateCache(): Promise<ExchangeRateCache> {
+  const received = parseReferenceSeries(await invoke<unknown>("fetch_exchange_rates"));
+  if (!received.buy && !received.sell) {
+    throw new Error("Divisa.do no tiene publicaciones recientes del Banco Central.");
+  }
+  const { exchangeRateCache: previous } = await getSettings();
+
+  // Las publicaciones sin dato o con una fecha anterior conservan la última observación local.
+  for (const side of ["buy", "sell"] as const) {
+    const saved = previous?.[side];
+    const next = received[side];
+    if (saved && (!next || saved.effectiveDate > next.effectiveDate)) {
+      received[side] = saved;
+    }
+  }
+
+  const db = await getDb();
+  await db.execute(
+    "UPDATE settings SET exchange_rate_cache_json = $1 WHERE id = $2",
+    [JSON.stringify(received), SETTINGS_ROW_ID],
+  );
+  return received;
+}
+
+export async function refreshExchangeRate(
+  settings?: Pick<AppSettings, "exchangeRateSide">,
+): Promise<ExchangeRateSnapshot> {
+  const { exchangeRateSide } = settings ?? await getSettings();
+  if (!rateRefresh) {
+    rateRefresh = updateExchangeRateCache().finally(() => { rateRefresh = null; });
+  }
+  const snapshot = automaticRateSnapshot(await rateRefresh, exchangeRateSide);
+  if (!snapshot) throw new Error("El Banco Central no publicó una tasa para la modalidad seleccionada.");
+  return snapshot;
+}
+
 /** Datos del freelancer, en el shape que espera `QuoteDocument` para el PDF. */
 export function settingsToFreelancerProfile(
-  settings: AppSettings,
+  settings: SettingsFormValues,
 ): FreelancerProfile {
   return {
     name: settings.freelancerName,

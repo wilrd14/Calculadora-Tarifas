@@ -50,11 +50,21 @@ export const additionalChargeSchema = z.object({
   amount: z.coerce.number().min(0, "No puede ser negativo"),
 });
 
+export const quoteExchangeRateSchema = z.object({
+  rate: z.number().positive(),
+  source: z.string(),
+  effectiveDate: z.string().nullable(),
+  side: z.enum(["buy", "sell"]).nullable(),
+  variationPercent: z.number().nullable(),
+});
+
 export const quoteFormSchema = z.object({
   clientName: z.string().min(1, "Ingresa el cliente o la empresa"),
   clientContact: z.string(),
   projectName: z.string().min(1, "Ingresa el nombre del proyecto"),
-  projectType: z.enum(PROJECT_TYPES),
+  projectType: z.union([z.enum(PROJECT_TYPES), z.literal("")]).pipe(
+    z.enum(PROJECT_TYPES, { error: "Selecciona el tipo de proyecto" }),
+  ),
   description: z.string(),
   items: z.array(quoteItemSchema).min(1, "Agrega al menos una funcionalidad"),
   hourlyRate: z.coerce.number().min(0, "No puede ser negativo"),
@@ -65,6 +75,8 @@ export const quoteFormSchema = z.object({
   currency: z.enum(["DOP", "USD"]),
   paymentTerms: z.string(),
   estimatedDelivery: z.string(),
+  exchangeRate: quoteExchangeRateSchema.optional(),
+  revisionOf: z.string().min(1).optional(),
 });
 
 // z.coerce.number() makes the schema's input type differ from its output type
@@ -90,7 +102,7 @@ export const defaultQuoteFormValues: QuoteFormInput = {
   clientName: "",
   clientContact: "",
   projectName: "",
-  projectType: "Web",
+  projectType: "",
   description: "",
   items: [emptyQuoteItem],
   hourlyRate: DEFAULT_HOURLY_RATE,

@@ -5,7 +5,9 @@ export const settingsFormSchema = z.object({
   currency: z.enum(["DOP", "USD"]),
   /** Cuántos DOP equivalen a 1 USD — usado para convertir la tarifa al cambiar de moneda en el formulario. */
   exchangeRateDopPerUsd: z.coerce.number().min(0.01, "Debe ser mayor a 0"),
-  freelancerName: z.string().min(1, "Ingresa tu nombre"),
+  exchangeRateMode: z.enum(["manual", "automatic"]),
+  exchangeRateSide: z.enum(["buy", "sell"]),
+  freelancerName: z.string().trim(),
   freelancerTagline: z.string(),
   freelancerEmail: z.string(),
   freelancerPhone: z.string(),

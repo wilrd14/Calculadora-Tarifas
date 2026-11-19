@@ -13,162 +13,96 @@ import { QUOTE_VALIDITY_DAYS } from "./quoteConditions";
 
 registerPdfFonts();
 
-// Paleta y tipografía replicadas de Template/Main.dc.html (ver Template/README.md).
-const ACCENT = "#1d4ed8";
-const COLOR_TEXT = "#1c1a17";
-const COLOR_TEXT_SECONDARY = "#6b6459";
-const COLOR_TEXT_MUTED = "#8a8276";
-const COLOR_TEXT_FAINT = "#a39a8b";
-const COLOR_TEXT_BODY = "#524c43";
-const COLOR_DIVIDER = "#e5e1d8";
-const COLOR_BOX_BG = "#f4f1ea";
-const COLOR_BACKGROUND = "#fdfcfa";
+const color = {
+  white: "#ffffff",
+  ink: "#172528",
+  soft: "#465b60",
+  accent: "#16596a",
+  accentLight: "#e9f3f4",
+  line: "#d6e1e3",
+};
 
 const styles = StyleSheet.create({
   page: {
-    backgroundColor: COLOR_BACKGROUND,
-    color: COLOR_TEXT,
+    paddingTop: 34,
+    paddingBottom: 56,
+    paddingHorizontal: 44,
+    backgroundColor: color.white,
+    color: color.ink,
     fontFamily: FONT_SANS,
+    fontSize: 10,
   },
-  accentBar: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 4.5,
-    backgroundColor: ACCENT,
-  },
-  content: {
-    paddingTop: 42,
-    paddingRight: 42,
-    paddingBottom: 48,
-    paddingLeft: 42,
-  },
-
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: 18,
-  },
-  headerLeft: { flexDirection: "column", gap: 3 },
-  brandName: {
-    fontFamily: FONT_DISPLAY,
-    fontWeight: 700,
-    fontSize: 16.5,
-  },
-  tagline: { fontSize: 9.75, color: COLOR_TEXT_SECONDARY, lineHeight: 1.5 },
-  contactLine: { fontSize: 9.75, color: COLOR_TEXT_SECONDARY, lineHeight: 1.5 },
-  link: { color: ACCENT, textDecoration: "none" },
-  headerRight: { flexDirection: "column", alignItems: "flex-end", gap: 4.5 },
-  title: {
-    fontFamily: FONT_DISPLAY,
-    fontWeight: 700,
-    fontSize: 21,
-    color: ACCENT,
-  },
-  metaMono: { fontFamily: FONT_MONO, fontSize: 9, color: COLOR_TEXT_MUTED },
-
-  divider: { height: 0.75, backgroundColor: COLOR_DIVIDER, marginVertical: 24 },
-
-  twoColRow: { flexDirection: "row", gap: 18 },
-  col: { flex: 1, flexDirection: "column", gap: 3 },
-  fieldLabel: {
-    fontSize: 8.25,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    color: COLOR_TEXT_FAINT,
-    fontWeight: 600,
-  },
-  fieldValue: { fontSize: 11.25, fontWeight: 600 },
-  fieldSub: { fontSize: 9.75, color: COLOR_TEXT_SECONDARY },
-
-  descriptionBox: {
-    marginTop: 12,
-    fontSize: 9.75,
-    color: COLOR_TEXT_BODY,
-    lineHeight: 1.6,
-    backgroundColor: COLOR_BOX_BG,
-    borderRadius: 3,
-    paddingVertical: 10.5,
-    paddingHorizontal: 12,
-  },
-
-  table: { marginTop: 24 },
-  tableHeaderRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1.5,
-    borderBottomColor: COLOR_TEXT,
-    paddingBottom: 7.5,
-  },
-  tableHeaderCell: {
-    fontSize: 8.25,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-    color: COLOR_TEXT_SECONDARY,
-    fontWeight: 600,
-  },
+  header: { flexDirection: "row", gap: 17 },
+  titleBlock: { flex: 1, gap: 5 },
+  title: { fontFamily: FONT_DISPLAY, fontSize: 28, fontWeight: 700, lineHeight: 1.07 },
+  subtitle: { fontSize: 11, color: color.soft },
+  metadata: { width: 162, borderLeftWidth: 1, borderLeftColor: color.line, paddingLeft: 13, gap: 4 },
+  metadataLabel: { color: color.accent, fontWeight: 600 },
+  metadataText: { fontSize: 9, color: color.soft },
+  quoteNumber: { fontFamily: FONT_MONO, fontSize: 8 },
+  identity: { marginTop: 16, flexDirection: "row", gap: 20 },
+  identityColumn: { flex: 1, gap: 2 },
+  label: { color: color.soft, fontSize: 9, fontWeight: 600 },
+  identityName: { fontWeight: 600, fontSize: 11 },
+  detail: { color: color.soft, fontSize: 9.5 },
+  link: { color: color.accent, textDecoration: "none" },
+  summary: { marginTop: 19, flexDirection: "row", gap: 12 },
+  price: { flex: 1.55, padding: 11, backgroundColor: color.accentLight, gap: 3 },
+  priceValue: { fontFamily: FONT_DISPLAY, color: color.accent, fontSize: 22, fontWeight: 700 },
+  term: { flex: 1, paddingTop: 12, borderTopWidth: 1, borderTopColor: color.line, gap: 5 },
+  scope: { marginTop: 16, gap: 4 },
+  sectionTitle: { color: color.accent, fontSize: 12, fontWeight: 600 },
+  bodyText: { color: color.soft },
+  table: { marginTop: 15 },
+  tableHeader: { flexDirection: "row", backgroundColor: color.accentLight, paddingVertical: 8, paddingHorizontal: 9 },
+  tableHeaderText: { color: color.accent, fontSize: 9, fontWeight: 600 },
   tableRow: {
     flexDirection: "row",
-    borderBottomWidth: 0.75,
-    borderBottomColor: COLOR_DIVIDER,
-    paddingVertical: 9,
-    alignItems: "center",
+    alignItems: "flex-start",
+    borderBottomWidth: 0.6,
+    borderBottomColor: color.line,
+    paddingVertical: 6,
+    paddingHorizontal: 9,
   },
-  colName: { flex: 1 },
-  colHours: { width: 67.5, textAlign: "right" },
-  colRate: { width: 90, textAlign: "right" },
-  colSubtotal: { width: 90, textAlign: "right" },
-  itemName: { fontSize: 10.5, fontWeight: 500 },
-  itemNote: { fontSize: 9, color: COLOR_TEXT_MUTED, marginTop: 1.5 },
-  mono: { fontFamily: FONT_MONO, fontSize: 9.75 },
-  monoStrong: { fontFamily: FONT_MONO, fontSize: 9.75, fontWeight: 600 },
-
-  totalsBox: { marginTop: 15, alignSelf: "flex-end", width: 195, gap: 6 },
-  totalsRow: {
+  colName: { flex: 1, paddingRight: 10 },
+  colHours: { width: 54, textAlign: "right" },
+  colRate: { width: 98, textAlign: "right" },
+  colSubtotal: { width: 108, textAlign: "right" },
+  itemName: { fontWeight: 500 },
+  itemNote: { fontSize: 8.75, color: color.soft, marginTop: 2 },
+  figures: { fontFamily: FONT_MONO, fontSize: 9 },
+  totals: { marginTop: 16, alignSelf: "flex-end", width: "62%", gap: 5 },
+  totalsRow: { flexDirection: "row", justifyContent: "space-between", gap: 12 },
+  totalLabel: { flex: 1, color: color.soft },
+  totalAmount: { fontFamily: FONT_MONO, textAlign: "right", fontSize: 9 },
+  grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
-    fontSize: 9.75,
-    color: COLOR_TEXT_SECONDARY,
+    alignItems: "baseline",
+    gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: color.line,
+    paddingTop: 8,
+    marginTop: 3,
   },
-  totalsRule: { height: 0.75, backgroundColor: COLOR_TEXT, marginVertical: 3 },
-  totalRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
-  totalLabel: {
-    fontSize: 9.75,
-    fontWeight: 600,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-  },
-  totalValue: { fontFamily: FONT_DISPLAY, fontSize: 18, fontWeight: 700, color: ACCENT },
-  currencyLabel: { textAlign: "right", fontSize: 8.25, color: COLOR_TEXT_FAINT },
-
-  termsRow: { flexDirection: "row", gap: 15 },
-  termCol: { flex: 1 },
-  termLabel: {
-    fontSize: 8.25,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    color: COLOR_TEXT_FAINT,
-    fontWeight: 600,
-    marginBottom: 4.5,
-  },
-  termValue: { fontSize: 9.375, color: COLOR_TEXT_BODY, lineHeight: 1.6 },
-
+  grandTotalValue: { fontWeight: 600, color: color.accent, fontSize: 14, textAlign: "right" },
   footer: {
-    marginTop: 24,
-    paddingTop: 15,
-    borderTopWidth: 0.75,
-    borderTopColor: COLOR_DIVIDER,
+    position: "absolute",
+    left: 44,
+    right: 44,
+    top: 749,
+    borderTopWidth: 0.6,
+    borderTopColor: color.line,
+    paddingTop: 8,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    color: color.soft,
+    fontSize: 8.5,
   },
-  footerText: { fontSize: 9, color: COLOR_TEXT_MUTED },
-  footerTag: { fontFamily: FONT_MONO, fontSize: 9, color: COLOR_TEXT_MUTED },
 });
 
 function toUrl(value: string): string {
-  return /^https?:\/\//.test(value) ? value : `https://${value}`;
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
 interface QuoteDocumentProps {
@@ -178,20 +112,8 @@ interface QuoteDocumentProps {
   date: Date;
 }
 
-/**
- * Documento PDF de la cotización — replica el diseño de referencia en
- * `Template/Main.dc.html` (encabezado, cliente/proyecto, tabla de ítems,
- * totales y condiciones).
- */
-export function QuoteDocument({
-  quote,
-  freelancer,
-  quoteNumber,
-  date,
-}: QuoteDocumentProps) {
-  const complexityMultiplierPercent = sumComplexityMultipliers(
-    quote.complexityMultiplierIds,
-  );
+export function QuoteDocument({ quote, freelancer, quoteNumber, date }: QuoteDocumentProps) {
+  const complexityMultiplierPercent = sumComplexityMultipliers(quote.complexityMultiplierIds);
   const selectedMultipliers = COMPLEXITY_MULTIPLIERS.filter((multiplier) =>
     quote.complexityMultiplierIds.includes(multiplier.id),
   );
@@ -203,182 +125,154 @@ export function QuoteDocument({
     discountPercent: quote.discountPercent,
   });
   const validUntil = addDays(date, QUOTE_VALIDITY_DAYS);
+  const money = (amount: number) => formatCurrency(amount, quote.currency);
+  const name = freelancer.name.trim();
+  const tagline = freelancer.tagline.trim();
+  const email = freelancer.email.trim();
+  const phone = freelancer.phone.trim();
+  const portfolio = freelancer.portfolio.trim();
+  const handle = freelancer.handle.trim();
+  const hasFreelancer = name || tagline || email || phone || portfolio || handle;
+  const terms = quote.paymentTerms.trim();
+  const delivery = quote.estimatedDelivery.trim();
+  const description = quote.description.trim();
+  const totalAmount = money(result.total);
+  const total = `${totalAmount} ${quote.currency}`;
 
   return (
-    <Document>
+    <Document title={`Cotización - ${quote.projectName}`} author={name || undefined} language="es-DO" creationDate={date}>
       <Page size="LETTER" style={styles.page}>
-        <View style={styles.accentBar} fixed />
-
-        <View style={styles.content}>
-          <View style={styles.headerRow}>
-            <View style={styles.headerLeft}>
-              <Text style={styles.brandName}>{freelancer.name}</Text>
-              {freelancer.tagline && (
-                <Text style={styles.tagline}>{freelancer.tagline}</Text>
-              )}
-              <Text style={styles.contactLine}>
-                {freelancer.email && (
-                  <Link src={`mailto:${freelancer.email}`} style={styles.link}>
-                    {freelancer.email}
-                  </Link>
-                )}
-                {freelancer.email && freelancer.portfolio && "  ·  "}
-                {freelancer.portfolio && (
-                  <Link src={toUrl(freelancer.portfolio)} style={styles.link}>
-                    {freelancer.portfolio}
-                  </Link>
-                )}
-              </Text>
-            </View>
-            <View style={styles.headerRight}>
-              <Text style={styles.title}>COTIZACIÓN</Text>
-              <Text style={styles.metaMono}>N.º {quoteNumber}</Text>
-              <Text style={styles.metaMono}>Fecha: {formatDateDMY(date)}</Text>
-              <Text style={styles.metaMono}>
-                Válida hasta: {formatDateDMY(validUntil)}
-              </Text>
-            </View>
+        <View style={styles.header}>
+          <View style={styles.titleBlock}>
+            <Text style={styles.title}>{quote.projectName}</Text>
+            <Text style={styles.subtitle}>Preparada para {quote.clientName}</Text>
           </View>
-
-          <View style={styles.divider} />
-
-          <View style={styles.twoColRow}>
-            <View style={styles.col}>
-              <Text style={styles.fieldLabel}>Cliente</Text>
-              <Text style={styles.fieldValue}>{quote.clientName}</Text>
-              {quote.clientContact && (
-                <Text style={styles.fieldSub}>{quote.clientContact}</Text>
-              )}
-            </View>
-            <View style={styles.col}>
-              <Text style={styles.fieldLabel}>Proyecto</Text>
-              <Text style={styles.fieldValue}>{quote.projectName}</Text>
-              <Text style={styles.fieldSub}>Tipo: {quote.projectType}</Text>
-            </View>
+          <View style={styles.metadata}>
+            <Text style={styles.metadataLabel}>Cotización</Text>
+            <Text style={styles.quoteNumber}>{quoteNumber}</Text>
+            <Text style={styles.metadataText}>Emitida el {formatDateDMY(date)}</Text>
+            <Text style={styles.metadataText}>Válida hasta el {formatDateDMY(validUntil)}</Text>
+            {quote.revisionOf && (
+              <>
+                <Text style={styles.metadataText}>Revisión de</Text>
+                <Text style={styles.quoteNumber}>{quote.revisionOf}</Text>
+              </>
+            )}
           </View>
+        </View>
 
-          {quote.description && (
-            <Text style={styles.descriptionBox}>{quote.description}</Text>
-          )}
-
-          <View style={styles.table}>
-            <View style={styles.tableHeaderRow}>
-              <Text style={[styles.tableHeaderCell, styles.colName]}>
-                Funcionalidad / módulo
-              </Text>
-              <Text style={[styles.tableHeaderCell, styles.colHours]}>Horas</Text>
-              <Text style={[styles.tableHeaderCell, styles.colRate]}>
-                Tarifa/h
-              </Text>
-              <Text style={[styles.tableHeaderCell, styles.colSubtotal]}>
-                Subtotal
-              </Text>
-            </View>
-
-            {quote.items.map((item, index) => (
-              <View style={styles.tableRow} key={index} wrap={false}>
-                <View style={styles.colName}>
-                  <Text style={styles.itemName}>{item.name}</Text>
-                  {item.complexity !== "Personalizado" && (
-                    <Text style={styles.itemNote}>
-                      Complejidad: {item.complexity}
-                    </Text>
-                  )}
-                </View>
-                <Text style={[styles.mono, styles.colHours]}>{item.hours}</Text>
-                <Text style={[styles.mono, styles.colRate]}>
-                  {formatCurrency(quote.hourlyRate, quote.currency)}
-                </Text>
-                <Text style={[styles.monoStrong, styles.colSubtotal]}>
-                  {formatCurrency(item.hours * quote.hourlyRate, quote.currency)}
-                </Text>
-              </View>
-            ))}
-          </View>
-
-          {selectedMultipliers.length > 0 && (
-            <Text style={styles.itemNote}>
-              Incluye:{" "}
-              {selectedMultipliers
-                .map((m) => `${m.label} (+${m.percent}%)`)
-                .join(", ")}
+        <View style={styles.summary}>
+          <View style={styles.price}>
+            <Text style={styles.label}>Total de la cotización · {quote.currency}</Text>
+            <Text style={[styles.priceValue, { fontSize: Math.min(22, 290 / totalAmount.length) }]}>
+              {totalAmount}
             </Text>
-          )}
+          </View>
+          {delivery && <SummaryTerm label="Entrega estimada" value={delivery} />}
+          {terms && <SummaryTerm label="Forma de pago" value={terms} />}
+        </View>
 
-          <View style={styles.totalsBox}>
-            <View style={styles.totalsRow}>
-              <Text>Subtotal mano de obra</Text>
-              <Text style={styles.mono}>
-                {formatCurrency(result.laborSubtotal, quote.currency)}
-              </Text>
-            </View>
-            {complexityMultiplierPercent > 0 && (
-              <View style={styles.totalsRow}>
-                <Text>Complejidad (+{complexityMultiplierPercent}%)</Text>
-                <Text style={styles.mono}>
-                  {formatCurrency(result.complexityAmount, quote.currency)}
-                </Text>
+        {(hasFreelancer || quote.clientContact.trim()) && (
+          <View style={styles.identity}>
+            {hasFreelancer && (
+              <View style={styles.identityColumn}>
+                <Text style={styles.label}>Emitida por</Text>
+                {name && <Text style={styles.identityName}>{name}</Text>}
+                {tagline && <Text style={styles.detail}>{tagline}</Text>}
+                {email && <Link src={`mailto:${email}`} style={[styles.detail, styles.link]}>{email}</Link>}
+                {phone && <Text style={styles.detail}>{phone}</Text>}
+                {portfolio && <Link src={toUrl(portfolio)} style={[styles.detail, styles.link]}>{portfolio}</Link>}
+                {handle && <Text style={styles.detail}>{handle}</Text>}
               </View>
             )}
-            <View style={styles.totalsRow}>
-              <Text>Cargos adicionales</Text>
-              <Text style={styles.mono}>
-                {formatCurrency(result.additionalChargesTotal, quote.currency)}
-              </Text>
-            </View>
-            <View style={styles.totalsRow}>
-              <Text>Subtotal</Text>
-              <Text style={styles.mono}>
-                {formatCurrency(result.subtotal, quote.currency)}
-              </Text>
-            </View>
-            <View style={styles.totalsRow}>
-              <Text>Descuento</Text>
-              <Text style={styles.mono}>
-                − {formatCurrency(result.discountAmount, quote.currency)}
-              </Text>
-            </View>
-            <View style={styles.totalsRule} />
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>
-                {formatCurrency(result.total, quote.currency)}
-              </Text>
-            </View>
-            <Text style={styles.currencyLabel}>{quote.currency}</Text>
+            {quote.clientContact.trim() && (
+              <View style={styles.identityColumn}>
+                <Text style={styles.label}>Contacto del cliente</Text>
+                <Text style={styles.detail}>{quote.clientContact}</Text>
+              </View>
+            )}
           </View>
+        )}
 
-          <View style={styles.divider} />
+        <View style={styles.scope}>
+          <Text style={styles.sectionTitle} minPresenceAhead={17}>Alcance del proyecto</Text>
+          <Text style={styles.label}>Tipo de proyecto · {quote.projectType}</Text>
+          {description && <Text style={styles.bodyText}>{description}</Text>}
+        </View>
 
-          <View style={styles.termsRow}>
-            <View style={styles.termCol}>
-              <Text style={styles.termLabel}>Forma de pago</Text>
-              <Text style={styles.termValue}>{quote.paymentTerms}</Text>
+        <View style={styles.table} minPresenceAhead={42}>
+          <View style={styles.tableHeader} fixed>
+            <Text style={[styles.tableHeaderText, styles.colName]}>Funcionalidad / módulo</Text>
+            <Text style={[styles.tableHeaderText, styles.colHours]}>Horas</Text>
+            <Text style={[styles.tableHeaderText, styles.colRate]}>Tarifa/h</Text>
+            <Text style={[styles.tableHeaderText, styles.colSubtotal]}>Importe</Text>
+          </View>
+          {quote.items.map((item, index) => (
+            <View style={styles.tableRow} key={index} wrap={item.name.length > 500}>
+              <View style={styles.colName}>
+                <Text style={styles.itemName}>{item.name}</Text>
+                {item.complexity !== "Personalizado" && (
+                  <Text style={styles.itemNote}>Complejidad · {item.complexity}</Text>
+                )}
+              </View>
+              <Text style={[styles.figures, styles.colHours]}>{item.hours}</Text>
+              <Text style={[styles.figures, styles.colRate]}>{money(quote.hourlyRate)}</Text>
+              <Text style={[styles.figures, styles.colSubtotal]}>{money(item.hours * quote.hourlyRate)}</Text>
             </View>
-            <View style={styles.termCol}>
-              <Text style={styles.termLabel}>Tiempo estimado</Text>
-              <Text style={styles.termValue}>{quote.estimatedDelivery}</Text>
-            </View>
-            <View style={styles.termCol}>
-              <Text style={styles.termLabel}>Vigencia</Text>
-              <Text style={styles.termValue}>
-                Esta cotización es válida por {QUOTE_VALIDITY_DAYS} días desde su
-                fecha de emisión.
+          ))}
+        </View>
+
+        <View style={styles.totals} wrap={quote.additionalCharges.length > 8 || quote.additionalCharges.some(({ name }) => name.length > 200)}>
+          <Text style={styles.sectionTitle} minPresenceAhead={26}>Desglose del precio</Text>
+          <TotalLine label="Mano de obra" amount={money(result.laborSubtotal)} />
+          {complexityMultiplierPercent > 0 && (
+            <>
+              <TotalLine label={`Recargo por complejidad (+${complexityMultiplierPercent} %)`} amount={money(result.complexityAmount)} />
+              <Text style={styles.itemNote}>
+                {selectedMultipliers.map((multiplier) => `${multiplier.label} (+${multiplier.percent} %)`).join(" · ")}
               </Text>
+            </>
+          )}
+          {quote.additionalCharges.map((charge, index) => (
+            <TotalLine key={index} label={charge.name} amount={money(charge.amount)} />
+          ))}
+          <View wrap={false}>
+            {quote.discountPercent > 0 && (
+              <>
+                <TotalLine label="Subtotal antes de descuento" amount={money(result.subtotal)} />
+                <TotalLine label={`Descuento (${quote.discountPercent} %)`} amount={`- ${money(result.discountAmount)}`} />
+              </>
+            )}
+            <View style={styles.grandTotal}>
+              <Text style={styles.sectionTitle}>Total</Text>
+              <Text style={styles.grandTotalValue}>{total}</Text>
             </View>
           </View>
+        </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              Gracias por la oportunidad de cotizar este proyecto.
-            </Text>
-            <Text style={styles.footerTag}>
-              {freelancer.handle && `${freelancer.handle} · `}
-              {freelancer.portfolio}
-            </Text>
-          </View>
+        <View style={styles.footer} fixed>
+          <Text>{quoteNumber}</Text>
+          <Text render={({ pageNumber, totalPages }) => `Página ${pageNumber} de ${totalPages}`} />
         </View>
       </Page>
     </Document>
+  );
+}
+
+function SummaryTerm({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.term}>
+      <Text style={styles.label}>{label}</Text>
+      <Text>{value}</Text>
+    </View>
+  );
+}
+
+function TotalLine({ label, amount }: { label: string; amount: string }) {
+  return (
+    <View style={styles.totalsRow} wrap={label.length > 500}>
+      <Text style={styles.totalLabel}>{label}</Text>
+      <Text style={styles.totalAmount}>{amount}</Text>
+    </View>
   );
 }

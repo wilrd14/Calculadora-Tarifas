@@ -1,7 +1,7 @@
 import { getDb } from "../../lib/db";
-import type { QuoteFormValues } from "../quote/schema";
+import { quoteExchangeRateSchema, type QuoteFormValues } from "../quote/schema";
 
-export const QUOTE_STATUSES = ["Enviada", "Aceptada", "Rechazada"] as const;
+export const QUOTE_STATUSES = ["Generada", "Enviada", "Aceptada", "Rechazada"] as const;
 export type QuoteStatus = (typeof QUOTE_STATUSES)[number];
 
 export interface QuoteHistoryRecord {
@@ -22,7 +22,9 @@ export interface QuoteHistoryRecord {
   additionalCharges: QuoteFormValues["additionalCharges"];
   total: number;
   pdfPath: string;
+  exchangeRate?: QuoteFormValues["exchangeRate"];
   status: QuoteStatus;
+  revisionOf?: string;
 }
 
 /** Guarda una cotización recién generada en el historial. */
@@ -31,19 +33,21 @@ export async function saveQuoteToHistory(params: {
   quote: QuoteFormValues;
   total: number;
   pdfPath: string;
+  createdAt: Date;
 }): Promise<void> {
-  const { id, quote, total, pdfPath } = params;
+  const { id, quote, total, pdfPath, createdAt } = params;
   const db = await getDb();
   await db.execute(
     `INSERT INTO quotes (
       id, created_at, client_name, client_contact, project_name, project_type,
       description, hourly_rate, currency, discount_percent, payment_terms,
       estimated_delivery, items_json, additional_charges_json, total, pdf_path,
-      status, complexity_multiplier_ids_json
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
+      status, complexity_multiplier_ids_json, exchange_rate_json, revision_of
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
+    ON CONFLICT (id) DO NOTHING`,
     [
       id,
-      new Date().toISOString(),
+      createdAt.toISOString(),
       quote.clientName,
       quote.clientContact,
       quote.projectName,
@@ -58,8 +62,10 @@ export async function saveQuoteToHistory(params: {
       JSON.stringify(quote.additionalCharges),
       total,
       pdfPath,
-      "Enviada" satisfies QuoteStatus,
+      "Generada" satisfies QuoteStatus,
       JSON.stringify(quote.complexityMultiplierIds),
+      quote.exchangeRate ? JSON.stringify(quote.exchangeRate) : null,
+      quote.revisionOf ?? null,
     ],
   );
 }
@@ -103,6 +109,7 @@ export function historyRecordToFormValues(
     currency: record.currency as QuoteFormValues["currency"],
     paymentTerms: record.paymentTerms,
     estimatedDelivery: record.estimatedDelivery,
+    exchangeRate: record.exchangeRate,
   };
 }
 
@@ -125,6 +132,8 @@ interface RawQuoteRow {
   pdf_path: string;
   status: string;
   complexity_multiplier_ids_json: string;
+  exchange_rate_json: string | null;
+  revision_of: string | null;
 }
 
 function mapRow(row: RawQuoteRow): QuoteHistoryRecord {
@@ -148,6 +157,18 @@ function mapRow(row: RawQuoteRow): QuoteHistoryRecord {
     additionalCharges: JSON.parse(row.additional_charges_json),
     total: row.total,
     pdfPath: row.pdf_path,
+    exchangeRate: readExchangeRate(row.exchange_rate_json),
     status: row.status as QuoteStatus,
+    revisionOf: row.revision_of ?? undefined,
   };
+}
+
+function readExchangeRate(value: string | null): QuoteFormValues["exchangeRate"] {
+  if (!value) return undefined;
+  try {
+    const parsed = quoteExchangeRateSchema.safeParse(JSON.parse(value));
+    return parsed.success ? parsed.data : undefined;
+  } catch {
+    return undefined;
+  }
 }

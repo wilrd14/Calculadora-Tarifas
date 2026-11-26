@@ -1,7 +1,8 @@
 import { useId, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { calculateQuote } from "../lib/calculate";
+import { calculatePaymentSchedule, calculateQuote } from "../lib/calculate";
 import { formatCurrency } from "../lib/currency";
+import { formatDateDMY } from "../lib/date";
 import { sumComplexityMultipliers } from "../features/quote/complexityMultipliers";
 import { SCOPE_TIERS } from "../features/quote/scopeTiers";
 import type { QuoteFormInput } from "../features/quote/schema";
@@ -23,6 +24,8 @@ export function QuotePreview({ preparing, message }: {
   const additionalCharges = useWatch({ control, name: "additionalCharges" });
   const discountPercent = useWatch({ control, name: "discountPercent" });
   const currency = useWatch({ control, name: "currency" });
+  const downPaymentPercent = useWatch({ control, name: "downPaymentPercent" });
+  const installments = useWatch({ control, name: "installments" });
 
   const [scopeTierId, setScopeTierId] = useState<string | null>(null);
 
@@ -39,6 +42,13 @@ export function QuotePreview({ preparing, message }: {
     })),
     discountPercent: Number(discountPercent) || 0,
   });
+
+  const schedule = calculatePaymentSchedule(
+    result.total,
+    Number(downPaymentPercent) || 0,
+    Number(installments) || 1,
+    new Date(),
+  );
 
   const scopeTier = SCOPE_TIERS.find((tier) => tier.id === scopeTierId);
   const scopeStatus = scopeTier
@@ -63,6 +73,20 @@ export function QuotePreview({ preparing, message }: {
           <Row label="Subtotal" value={formatCurrency(result.subtotal, currency)} />
           <Row label={`Descuento (${Number(discountPercent) || 0}%)`} value={`− ${formatCurrency(result.discountAmount, currency)}`} />
         </dl>
+        {schedule.length > 0 && (
+          <>
+            <p className="text-xs font-medium text-text-soft">Calendario de pagos</p>
+            <dl className="my-2 grid gap-2 text-sm amount">
+              {schedule.map((row) => (
+                <Row
+                  key={row.label}
+                  label={`${row.label} · ${formatDateDMY(row.date)}`}
+                  value={formatCurrency(row.amount, currency)}
+                />
+              ))}
+            </dl>
+          </>
+        )}
         <p className="text-xs font-medium text-text-soft">Referencia de alcance</p>
       {/* Nivel de alcance: solo una referencia de horas, no se guarda. */}
       <div className="my-2 flex flex-wrap gap-1.5">

@@ -13,6 +13,11 @@ export const settingsFormSchema = z.object({
   freelancerPhone: z.string(),
   freelancerPortfolio: z.string(),
   freelancerHandle: z.string(),
+  /** Texto por defecto de "Métodos de pago" para cotizaciones nuevas (ej. efectivo, PayPal). */
+  paymentMethods: z.string(),
+  /** Datos de la cuenta que recibe transferencias en cada moneda. */
+  transferAccountDop: z.string(),
+  transferAccountUsd: z.string(),
 });
 
 // Igual que en features/quote/schema.ts: z.coerce.number() hace que el tipo

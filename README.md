@@ -45,6 +45,13 @@ cubre qué tiene la app hoy y cómo usarla/desarrollarla.
 - **Cargos adicionales**: línea(s) de monto fijo para cosas como diseño UI,
   despliegue, mantenimiento, etc.
 - **Descuento** opcional en porcentaje.
+- **Anticipo y cuotas mensuales**: define un anticipo (% del total, al
+  aceptar) y reparte el resto en hasta 12 cuotas mensuales iguales. El
+  calendario de pagos se ve en la vista previa y en el PDF; la última cuota
+  absorbe el redondeo para que siempre sume el total exacto.
+- **Métodos de pago y datos de transferencia**: se rellenan desde
+  Configuración (con una cuenta por moneda, USD y DOP) y se pueden ajustar
+  en cada cotización. Al cambiar de moneda se cambia la cuenta.
 - **Niveles de alcance** de referencia (MVP, Producción core, Enterprise)
   que comparan tus horas totales contra rangos típicos, sin restringir
   nada — solo para orientarte.
@@ -81,7 +88,9 @@ que la cotización use la misma moneda en la que se guardaron.
   guarda ese mismo PDF. El archivo se registra en el historial al guardarlo.
 - La primera página presenta el proyecto, cliente, total, plazo, forma de
   pago y vigencia. El documento incluye el detalle de alcance, horas, cargos,
-  recargos y descuento.
+  recargos y descuento. Un recuadro con los métodos de pago y los datos de
+  transferencia también va en la primera página, y el calendario de pagos
+  al final.
 - Se guarda solo en `Documentos/Cotizaciones` — no hay que elegir carpeta
   cada vez.
 - El documento usa fondo blanco y acento petróleo para lectura en pantalla e impresión.
@@ -100,6 +109,8 @@ que la cotización use la misma moneda en la que se guardaron.
 ### Configuración
 - Tarifa por hora y moneda por defecto para cotizaciones nuevas.
 - Tasa de cambio DOP↔USD.
+- Métodos de pago y una cuenta de transferencia para USD y otra para DOP,
+  usados como valores iniciales de cada cotización nueva.
 - Datos opcionales del freelancer para el PDF. El perfil empieza vacío en
   instalaciones nuevas.
 - Tema claro u oscuro en **Configuración → Apariencia**, guardado en esta

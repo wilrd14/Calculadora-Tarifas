@@ -39,6 +39,9 @@ interface RawSettingsRow {
   freelancer_phone: string;
   freelancer_portfolio: string;
   freelancer_handle: string;
+  payment_methods: string;
+  transfer_account_dop: string;
+  transfer_account_usd: string;
 }
 
 /** Lee la configuración guardada (tarifa/moneda por defecto + datos del freelancer). */
@@ -65,6 +68,9 @@ export async function getSettings(): Promise<AppSettings> {
     freelancerPhone: row.freelancer_phone,
     freelancerPortfolio: row.freelancer_portfolio,
     freelancerHandle: row.freelancer_handle,
+    paymentMethods: row.payment_methods,
+    transferAccountDop: row.transfer_account_dop,
+    transferAccountUsd: row.transfer_account_usd,
   };
 }
 
@@ -83,8 +89,11 @@ export async function saveSettings(settings: SettingsFormValues): Promise<void> 
       freelancer_portfolio = $8,
       freelancer_handle = $9,
       exchange_rate_mode = $10,
-      exchange_rate_side = $11
-    WHERE id = $12`,
+      exchange_rate_side = $11,
+      payment_methods = $12,
+      transfer_account_dop = $13,
+      transfer_account_usd = $14
+    WHERE id = $15`,
     [
       settings.hourlyRate,
       settings.currency,
@@ -97,6 +106,9 @@ export async function saveSettings(settings: SettingsFormValues): Promise<void> 
       settings.freelancerHandle,
       settings.exchangeRateMode,
       settings.exchangeRateSide,
+      settings.paymentMethods,
+      settings.transferAccountDop,
+      settings.transferAccountUsd,
       SETTINGS_ROW_ID,
     ],
   );

@@ -18,6 +18,10 @@ export interface QuoteHistoryRecord {
   discountPercent: number;
   paymentTerms: string;
   estimatedDelivery: string;
+  downPaymentPercent: number;
+  installments: number;
+  paymentMethods: string;
+  transferDetails: string;
   items: QuoteFormValues["items"];
   additionalCharges: QuoteFormValues["additionalCharges"];
   total: number;
@@ -42,8 +46,9 @@ export async function saveQuoteToHistory(params: {
       id, created_at, client_name, client_contact, project_name, project_type,
       description, hourly_rate, currency, discount_percent, payment_terms,
       estimated_delivery, items_json, additional_charges_json, total, pdf_path,
-      status, complexity_multiplier_ids_json, exchange_rate_json, revision_of
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
+      status, complexity_multiplier_ids_json, exchange_rate_json, revision_of,
+      down_payment_percent, installments, payment_methods, transfer_details
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
     ON CONFLICT (id) DO NOTHING`,
     [
       id,
@@ -66,6 +71,10 @@ export async function saveQuoteToHistory(params: {
       JSON.stringify(quote.complexityMultiplierIds),
       quote.exchangeRate ? JSON.stringify(quote.exchangeRate) : null,
       quote.revisionOf ?? null,
+      quote.downPaymentPercent,
+      quote.installments,
+      quote.paymentMethods,
+      quote.transferDetails,
     ],
   );
 }
@@ -109,6 +118,10 @@ export function historyRecordToFormValues(
     currency: record.currency as QuoteFormValues["currency"],
     paymentTerms: record.paymentTerms,
     estimatedDelivery: record.estimatedDelivery,
+    downPaymentPercent: record.downPaymentPercent,
+    installments: record.installments,
+    paymentMethods: record.paymentMethods,
+    transferDetails: record.transferDetails,
     exchangeRate: record.exchangeRate,
   };
 }
@@ -134,6 +147,10 @@ interface RawQuoteRow {
   complexity_multiplier_ids_json: string;
   exchange_rate_json: string | null;
   revision_of: string | null;
+  down_payment_percent: number;
+  installments: number;
+  payment_methods: string;
+  transfer_details: string;
 }
 
 function mapRow(row: RawQuoteRow): QuoteHistoryRecord {
@@ -150,6 +167,10 @@ function mapRow(row: RawQuoteRow): QuoteHistoryRecord {
     discountPercent: row.discount_percent,
     paymentTerms: row.payment_terms,
     estimatedDelivery: row.estimated_delivery,
+    downPaymentPercent: row.down_payment_percent,
+    installments: row.installments,
+    paymentMethods: row.payment_methods,
+    transferDetails: row.transfer_details,
     items: JSON.parse(row.items_json),
     complexityMultiplierIds: JSON.parse(
       row.complexity_multiplier_ids_json || "[]",

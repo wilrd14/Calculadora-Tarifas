@@ -51,9 +51,13 @@ interface QuoteFormProps {
 export function QuoteForm({ initialValues, active, onDraftChange }: QuoteFormProps) {
   const id = useId();
   const defaultsLoaded = useRef(Boolean(initialValues));
+  // Último texto puesto automáticamente desde Configuración en cada campo, para distinguirlo de una edición manual.
+  const autoFilled = useRef({ paymentMethods: "", transferDetails: "" });
   const draftDirty = useRef(false);
   const draftHasEdits = useRef(false);
   const conversionBase = useRef<{ amount: number; currency: Currency } | null>(null);
+  // Cuentas de transferencia guardadas en Configuración, para cambiar la de la cotización al cambiar de moneda.
+  const savedAccounts = useRef<Record<Currency, string>>({ DOP: "", USD: "" });
   const [pendingTemplate, setPendingTemplate] = useState<(typeof PROJECT_ARCHETYPES)[number] | null>(null);
   const form = useForm<QuoteFormInput, unknown, QuoteFormValues>({
     resolver: zodResolver(quoteFormSchema),
@@ -182,6 +186,7 @@ export function QuoteForm({ initialValues, active, onDraftChange }: QuoteFormPro
       const { getSettings, getEffectiveExchangeRate, refreshExchangeRate } = await import("../settings/db");
       const settings = await getSettings();
       if (cancelled) return;
+      savedAccounts.current = { DOP: settings.transferAccountDop, USD: settings.transferAccountUsd };
       const newDraft = !defaultsLoaded.current;
       if (newDraft) {
         defaultsLoaded.current = true;
@@ -190,6 +195,11 @@ export function QuoteForm({ initialValues, active, onDraftChange }: QuoteFormPro
           setValue("currency", settings.currency);
         }
       }
+      // Se reaplica cada vez que se vuelve a esta pestaña (el formulario sigue montado y Configuración pudo cambiar).
+      // Solo pisa un campo vacío o con lo último que se puso automáticamente; un texto escrito a mano
+      // (o guardado en un borrador/cotización duplicada) se respeta.
+      fillFromSettings("paymentMethods", settings.paymentMethods);
+      fillFromSettings("transferDetails", savedAccounts.current[getValues("currency")]);
 
       const effectiveRate = getEffectiveExchangeRate(settings);
       setExchangeRate((current) => current ?? effectiveRate);
@@ -224,9 +234,25 @@ export function QuoteForm({ initialValues, active, onDraftChange }: QuoteFormPro
     setValue("hourlyRate", Math.round(converted * 100) / 100, { shouldDirty: true, shouldValidate: true });
   }
 
+  function fillFromSettings(name: "paymentMethods" | "transferDetails", next: string) {
+    const current = getValues(name) ?? "";
+    if (!current.trim() || current === autoFilled.current[name]) {
+      // Sin shouldDirty: es un relleno automático, no una edición del usuario.
+      setValue(name, next);
+      autoFilled.current[name] = next;
+    }
+  }
+
   function handleCurrencyChange(event: ChangeEvent<HTMLSelectElement>) {
-    if (!exchangeRate) return;
     const currency = event.target.value as Currency;
+    // Cambia a la cuenta de la nueva moneda si el texto está vacío, es el autorrelleno o es la cuenta
+    // guardada de la otra moneda; si el usuario lo editó a mano, se respeta.
+    const other = currency === "USD" ? "DOP" : "USD";
+    if ((getValues("transferDetails") ?? "") === savedAccounts.current[other]) {
+      autoFilled.current.transferDetails = savedAccounts.current[other];
+    }
+    fillFromSettings("transferDetails", savedAccounts.current[currency]);
+    if (!exchangeRate) return;
     const amount = Number(getValues("hourlyRate"));
     if (!Number.isFinite(amount)) return;
     conversionBase.current ??= { amount, currency: currency === "USD" ? "DOP" : "USD" };
@@ -564,12 +590,64 @@ export function QuoteForm({ initialValues, active, onDraftChange }: QuoteFormPro
                 />
               </FormField>
 
+              <FormField label="Métodos de pago" htmlFor={`${id}-paymentMethods`} className="sm:col-span-2">
+                <textarea
+                  id={`${id}-paymentMethods`}
+                  rows={2}
+                  className={inputClassName}
+                  placeholder="Ej. Transferencia bancaria, PayPal, efectivo"
+                  {...register("paymentMethods")}
+                />
+              </FormField>
+
+              <FormField label="Datos para transferencia" htmlFor={`${id}-transferDetails`} className="sm:col-span-2">
+                <textarea
+                  id={`${id}-transferDetails`}
+                  rows={3}
+                  className={inputClassName}
+                  placeholder="Banco, tipo de cuenta, número y titular (cambia según la moneda)"
+                  {...register("transferDetails")}
+                />
+              </FormField>
+
               <FormField label="Tiempo estimado de entrega" htmlFor={`${id}-estimatedDelivery`}>
                 <input
                   id={`${id}-estimatedDelivery`}
                   className={inputClassName}
                   placeholder="Ej. 3–4 semanas desde el inicio"
                   {...register("estimatedDelivery")}
+                />
+              </FormField>
+
+              <FormField
+                label="Anticipo (%)"
+                htmlFor={`${id}-downPaymentPercent`}
+                error={errors.downPaymentPercent?.message}
+              >
+                <input
+                  id={`${id}-downPaymentPercent`}
+                  type="number"
+                  step="1"
+                  min="0"
+                  max="100"
+                  className={inputClassName}
+                  {...register("downPaymentPercent")}
+                />
+              </FormField>
+
+              <FormField
+                label="Cuotas mensuales (el resto)"
+                htmlFor={`${id}-installments`}
+                error={errors.installments?.message}
+              >
+                <input
+                  id={`${id}-installments`}
+                  type="number"
+                  step="1"
+                  min="1"
+                  max="12"
+                  className={inputClassName}
+                  {...register("installments")}
                 />
               </FormField>
             </div>

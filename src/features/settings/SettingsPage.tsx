@@ -340,6 +340,47 @@ export function SettingsPage() {
         </div>
       </section>
 
+      <section className="grid items-start gap-3 border-t border-border pt-7 lg:grid-cols-[minmax(10rem,1fr)_minmax(0,2fr)] lg:gap-6">
+        <div className="space-y-1">
+          <SectionHeading>Métodos de pago</SectionHeading>
+          <p className="text-sm text-text-soft">
+            Valores iniciales de cada cotización nueva; allí puedes ajustarlos. Salen en el PDF.
+          </p>
+        </div>
+
+        <div className="grid gap-4 rounded-lg border border-border bg-well p-4 sm:grid-cols-2">
+          <FormField label="Métodos aceptados" htmlFor="paymentMethods" className="sm:col-span-2">
+            <textarea
+              id="paymentMethods"
+              rows={3}
+              className={inputClassName}
+              placeholder="Ej. Transferencia bancaria, PayPal (tu@correo.com), efectivo"
+              {...register("paymentMethods")}
+            />
+          </FormField>
+
+          <FormField label="Cuenta para transferencias en USD" htmlFor="transferAccountUsd">
+            <textarea
+              id="transferAccountUsd"
+              rows={4}
+              className={inputClassName}
+              placeholder={"Banco, tipo de cuenta, número y titular"}
+              {...register("transferAccountUsd")}
+            />
+          </FormField>
+
+          <FormField label="Cuenta para transferencias en DOP" htmlFor="transferAccountDop">
+            <textarea
+              id="transferAccountDop"
+              rows={4}
+              className={inputClassName}
+              placeholder={"Banco, tipo de cuenta, número y titular"}
+              {...register("transferAccountDop")}
+            />
+          </FormField>
+        </div>
+      </section>
+
       <div className="flex flex-wrap items-center justify-end gap-4 border-t border-border pt-5">
         <button
           type="submit"

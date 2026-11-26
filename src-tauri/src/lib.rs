@@ -190,6 +190,28 @@ fn database_migrations() -> Vec<SqlxMigration> {
             sql: "ALTER TABLE quotes ADD COLUMN revision_of TEXT REFERENCES quotes(id);",
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 11,
+            description: "add_payment_plan_to_quotes",
+            // Anticipo (% del total) y número de cuotas mensuales iguales;
+            // el calendario se deriva, no se guarda. Defaults = pago único.
+            sql: "ALTER TABLE quotes ADD COLUMN down_payment_percent REAL NOT NULL DEFAULT 0;
+                ALTER TABLE quotes ADD COLUMN installments INTEGER NOT NULL DEFAULT 1;",
+            kind: MigrationKind::Up,
+        },
+        Migration {
+            version: 12,
+            description: "add_payment_methods",
+            // Textos por defecto en settings (métodos de pago + una cuenta de
+            // transferencia por moneda); cada cotización guarda su propia copia
+            // editable. Todo TEXT '' para que las filas existentes no queden NULL.
+            sql: "ALTER TABLE settings ADD COLUMN payment_methods TEXT NOT NULL DEFAULT '';
+                ALTER TABLE settings ADD COLUMN transfer_account_dop TEXT NOT NULL DEFAULT '';
+                ALTER TABLE settings ADD COLUMN transfer_account_usd TEXT NOT NULL DEFAULT '';
+                ALTER TABLE quotes ADD COLUMN payment_methods TEXT NOT NULL DEFAULT '';
+                ALTER TABLE quotes ADD COLUMN transfer_details TEXT NOT NULL DEFAULT '';",
+            kind: MigrationKind::Up,
+        },
     ]
     .into_iter()
     .map(|migration| {

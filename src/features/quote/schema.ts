@@ -75,6 +75,13 @@ export const quoteFormSchema = z.object({
   currency: z.enum(["DOP", "USD"]),
   paymentTerms: z.string(),
   estimatedDelivery: z.string(),
+  /** % del total que se paga al aceptar. `.default` para que borradores/filas viejas sin el campo sigan siendo válidos. */
+  downPaymentPercent: z.coerce.number().min(0, "No puede ser negativo").max(100, "Máximo 100%").default(0),
+  /** Cuotas mensuales iguales para el resto (1 = sin fraccionar). */
+  installments: z.coerce.number().int("Debe ser un número entero").min(1, "Mínimo 1").max(12, "Máximo 12").default(1),
+  /** Métodos de pago y datos de transferencia de esta cotización (prellenados desde Configuración, editables). */
+  paymentMethods: z.string().default(""),
+  transferDetails: z.string().default(""),
   exchangeRate: quoteExchangeRateSchema.optional(),
   revisionOf: z.string().min(1).optional(),
 });
@@ -112,4 +119,8 @@ export const defaultQuoteFormValues: QuoteFormInput = {
   currency: DEFAULT_CURRENCY,
   paymentTerms: DEFAULT_PAYMENT_TERMS,
   estimatedDelivery: DEFAULT_ESTIMATED_DELIVERY,
+  downPaymentPercent: 0,
+  installments: 1,
+  paymentMethods: "",
+  transferDetails: "",
 };

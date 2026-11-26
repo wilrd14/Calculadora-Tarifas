@@ -1,5 +1,5 @@
 import { Document, Link, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
-import { calculateQuote } from "../../lib/calculate";
+import { calculatePaymentSchedule, calculateQuote } from "../../lib/calculate";
 import { formatCurrency } from "../../lib/currency";
 import { addDays, formatDateDMY } from "../../lib/date";
 import type { FreelancerProfile } from "../settings/db";
@@ -50,6 +50,16 @@ const styles = StyleSheet.create({
   price: { flex: 1.55, padding: 11, backgroundColor: color.accentLight, gap: 3 },
   priceValue: { fontFamily: FONT_DISPLAY, color: color.accent, fontSize: 22, fontWeight: 700 },
   term: { flex: 1, paddingTop: 12, borderTopWidth: 1, borderTopColor: color.line, gap: 5 },
+  paymentBox: {
+    marginTop: 14,
+    flexDirection: "row",
+    gap: 16,
+    padding: 11,
+    borderWidth: 1,
+    borderColor: color.line,
+    backgroundColor: color.accentLight,
+  },
+  paymentColumn: { flex: 1, gap: 4 },
   scope: { marginTop: 16, gap: 4 },
   sectionTitle: { color: color.accent, fontSize: 12, fontWeight: 600 },
   bodyText: { color: color.soft },
@@ -124,6 +134,7 @@ export function QuoteDocument({ quote, freelancer, quoteNumber, date }: QuoteDoc
     additionalCharges: quote.additionalCharges,
     discountPercent: quote.discountPercent,
   });
+  const schedule = calculatePaymentSchedule(result.total, quote.downPaymentPercent, quote.installments, date);
   const validUntil = addDays(date, QUOTE_VALIDITY_DAYS);
   const money = (amount: number) => formatCurrency(amount, quote.currency);
   const name = freelancer.name.trim();
@@ -136,6 +147,8 @@ export function QuoteDocument({ quote, freelancer, quoteNumber, date }: QuoteDoc
   const terms = quote.paymentTerms.trim();
   const delivery = quote.estimatedDelivery.trim();
   const description = quote.description.trim();
+  const paymentMethods = quote.paymentMethods.trim();
+  const transferDetails = quote.transferDetails.trim();
   const totalAmount = money(result.total);
   const total = `${totalAmount} ${quote.currency}`;
 
@@ -171,6 +184,23 @@ export function QuoteDocument({ quote, freelancer, quoteNumber, date }: QuoteDoc
           {delivery && <SummaryTerm label="Entrega estimada" value={delivery} />}
           {terms && <SummaryTerm label="Forma de pago" value={terms} />}
         </View>
+
+        {(paymentMethods || transferDetails) && (
+          <View style={styles.paymentBox} wrap={false}>
+            {paymentMethods && (
+              <View style={styles.paymentColumn}>
+                <Text style={styles.sectionTitle}>Métodos de pago</Text>
+                <Text style={styles.bodyText}>{paymentMethods}</Text>
+              </View>
+            )}
+            {transferDetails && (
+              <View style={styles.paymentColumn}>
+                <Text style={styles.sectionTitle}>Transferencia · {quote.currency}</Text>
+                <Text style={styles.bodyText}>{transferDetails}</Text>
+              </View>
+            )}
+          </View>
+        )}
 
         {(hasFreelancer || quote.clientContact.trim()) && (
           <View style={styles.identity}>
@@ -249,6 +279,26 @@ export function QuoteDocument({ quote, freelancer, quoteNumber, date }: QuoteDoc
             </View>
           </View>
         </View>
+
+        {schedule.length > 0 && (
+          <View style={styles.table} minPresenceAhead={42}>
+            <Text style={styles.sectionTitle}>Calendario de pagos</Text>
+            <View style={[styles.tableHeader, { marginTop: 6 }]}>
+              <Text style={[styles.tableHeaderText, styles.colName]}>Pago</Text>
+              <Text style={[styles.tableHeaderText, styles.colRate]}>Fecha</Text>
+              <Text style={[styles.tableHeaderText, styles.colHours]}>%</Text>
+              <Text style={[styles.tableHeaderText, styles.colSubtotal]}>Monto</Text>
+            </View>
+            {schedule.map((row) => (
+              <View style={styles.tableRow} key={row.label} wrap={false}>
+                <Text style={[styles.itemName, styles.colName]}>{row.label}</Text>
+                <Text style={[styles.figures, styles.colRate]}>{formatDateDMY(row.date)}</Text>
+                <Text style={[styles.figures, styles.colHours]}>{row.percent.toFixed(1)}</Text>
+                <Text style={[styles.figures, styles.colSubtotal]}>{money(row.amount)}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
         <View style={styles.footer} fixed>
           <Text>{quoteNumber}</Text>

@@ -1,4 +1,4 @@
-# Diseño de Calculadora de Tarifas
+# Diseño de Cotizo
 
 La interfaz es una hoja de trabajo para cotizar desarrollo de software. La edición y el desglose se mantienen cerca para que el usuario pueda relacionar cada ajuste con el total.
 

@@ -203,7 +203,7 @@ async fn validate(
         return Err("El respaldo excede el límite de 64 MB.".into());
     }
     let backup: Backup = serde_json::from_str(content)
-        .map_err(|_| "El archivo no es un respaldo de Calculadora de Tarifas.".to_string())?;
+        .map_err(|_| "El archivo no es un respaldo de Cotizo.".to_string())?;
     if backup.format != "calculadora-tarifas"
         || backup.version != 1
         || backup.tables.len() != TABLES.len()

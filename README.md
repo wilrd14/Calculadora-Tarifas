@@ -1,4 +1,4 @@
-# 🧮 Calculadora de Tarifas
+# 🧮 Cotizo
 
 App de escritorio para cotizar proyectos de desarrollo de software
 freelance en minutos: llenas un formulario, ves el total calculándose en
@@ -12,7 +12,7 @@ cubre qué tiene la app hoy y cómo usarla/desarrollarla.
 
 ## Inicio rápido en Windows
 
-1. Descarga el instalador desde [Releases](https://github.com/wilrd14/Calculadora-Tarifas/releases) ejecuta el archivo `.exe` o `.msi` disponible y abre **Calculadora de Tarifas** desde el menú Inicio.
+1. Descarga el instalador desde [Releases](https://github.com/wilrd14/Calculadora-Tarifas/releases) ejecuta el archivo `.exe` o `.msi` disponible y abre **Cotizo** desde el menú Inicio.
 2. En **Configuración**, guarda tu tarifa por hora, la moneda habitual y la tasa USD/DOP. Puedes añadir tus datos profesionales para que aparezcan en el PDF.
 3. Abre **Nueva cotización**, indica el cliente y el proyecto, y ajusta las funcionalidades, horas y condiciones. El total se actualiza mientras editas.
 4. Pulsa **Vista previa PDF**, revisa el documento y guárdalo. Puedes abrirlo desde **Historial** o en `Documentos/Cotizaciones`.

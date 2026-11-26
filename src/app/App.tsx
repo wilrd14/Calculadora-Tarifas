@@ -113,7 +113,7 @@ export default function App() {
           <rect x="4.5" y="3" width="15" height="18" rx="3" stroke="currentColor" strokeWidth="1.5" />
           <path d="M8 8h8m-8 5h2m4 0h2m-8 4h2m4 0h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
-        <span>Calculadora de Tarifas</span>
+        <span>Cotizo</span>
       </header>
       <nav className="app-nav" aria-label="Secciones">
         {(Object.keys(tabs) as Tab[]).map((id) => (
